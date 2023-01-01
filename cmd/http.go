@@ -15,7 +15,7 @@ import (
 )
 
 type HTTPServer struct {
-	g    *http.Server
+	g    *gin.Engine
 	http *client.Client
 }
 
@@ -24,18 +24,20 @@ func runServer(hc *client.Client) {
 	router.Use(CORSMiddleware())
 
 	s := HTTPServer{
-		g: &http.Server{
-			Addr:    ":2323",
-			Handler: router,
-		},
+		g:    router,
 		http: hc,
 	}
 
-	s.setupHandlers(router)
+	s.setupHandlers()
+
+	srv := &http.Server{
+		Addr:    ":2323",
+		Handler: router,
+	}
 
 	go func() {
 		// service connections
-		if err := s.g.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
@@ -52,7 +54,7 @@ func runServer(hc *client.Client) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	if err := s.g.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
 	// catching ctx.Done(). timeout of 1 second.
@@ -63,11 +65,15 @@ func runServer(hc *client.Client) {
 	log.Println("Server exiting")
 }
 
-func (s *HTTPServer) setupHandlers(r *gin.Engine) {
+func (s *HTTPServer) setupHandlers() {
 	{
-		x := r.Group("pubg/user")
-		x.GET("byid/:id", s.getPubgUserByID)
-		x.GET("byname/:name", s.getPubgUserByName)
+		r := s.g.Group("pubg/user")
+		r.GET("byid/:id", s.getPubgPlayerByID)
+		r.GET("byname/:name", s.getPubgPlayerByName)
+	}
+	{
+		r := s.g.Group("pubg/match")
+		r.GET("byid/:id", s.getPubgMatchByID)
 	}
 }
 

@@ -1,8 +1,10 @@
 # pubg-stats-api
 
+A stats API for the PUBG player, The4nswer. You need to install and run [pubg-stats-ui](https://github.com/ridvansumset/pubg-stats-ui) in order to use this project.
+
 First, you need to have `go` installed to your computer. Visit [this page](https://go.dev/dl/) and choose appropriate Go release for your system.
 
-Then, you need to have an PUBG API key. Visit [this page](https://developer.pubg.com/) and create yours if you don't have one.
+Then, you'll need to have a PUBG API key. Visit [this page](https://developer.pubg.com/) and create yours if you don't have one.
 
 ## Next Steps
 
@@ -35,8 +37,3 @@ Finally, run the server:
 ```
 make pubg && ./pubg
 ```
-
-
-## UI
-
-To be able to use this API, you'll need to install and run [pubg-stats-ui](https://github.com/ridvansumset/pubg-stats-ui).
